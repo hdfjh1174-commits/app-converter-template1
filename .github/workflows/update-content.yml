@@ -38,12 +38,16 @@ jobs:
             SRC="_newcontent/$(ls _newcontent)"
           fi
 
-          # icon.png at the root of the zip (optional) replaces the app icon
           if [ -f "$SRC/icon.png" ]; then
-            cp "$SRC/icon.png" app/src/main/res/mipmap-anydpi/ic_launcher.png
-            cp "$SRC/icon.png" app/src/main/res/mipmap-anydpi/ic_launcher_round.png
+            declare -A SIZES=( [mdpi]=48 [hdpi]=72 [xhdpi]=96 [xxhdpi]=144 [xxxhdpi]=192 )
+            for density in "${!SIZES[@]}"; do
+              size="${SIZES[$density]}"
+              mkdir -p "app/src/main/res/mipmap-$density"
+              convert "$SRC/icon.png" -resize ${size}x${size} "app/src/main/res/mipmap-$density/ic_launcher.png"
+              convert "$SRC/icon.png" -resize ${size}x${size} "app/src/main/res/mipmap-$density/ic_launcher_round.png"
+            done
             rm -f "$SRC/icon.png"
-            echo "تم تحديث الأيقونة من icon.png"
+            echo "تم تحديث الأيقونة بكل المقاسات من icon.png"
           fi
 
           cp -r "$SRC/." app/src/main/assets/
