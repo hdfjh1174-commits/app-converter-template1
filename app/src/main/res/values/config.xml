@@ -1,0 +1,5 @@
+<resources>
+    <bool name="enable_camera">false</bool>
+    <bool name="enable_location">false</bool>
+    <bool name="enable_microphone">false</bool>
+</resources>

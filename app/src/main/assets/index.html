@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة ضغط وفك ضغط الصور</title>
+<meta name="theme-color" content="#160b09">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zip.js/zip.js/dist/zip.min.js"></script>
+<style>
+  :root{
+    --bg: #160b09;
+    --bg-soft: #1f120e;
+    --panel: #251712;
+    --line: #3a231c;
+    --amber: #ff7a1a;
+    --amber-dim: #a34e12;
+    --paper: #f3e9df;
+    --paper-dim: #b8a698;
+    --green: #6fbf73;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(255,122,26,0.10), transparent 60%),
+      var(--bg);
+    color:var(--paper);
+    font-family:'Tajawal', sans-serif;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(26px,5vw,38px);
+    font-weight:900;
+    margin:0 0 10px;
+    line-height:1.3;
+  }
+  header p{
+    color:var(--paper-dim);
+    font-size:15px;
+    margin:0;
+    max-width:480px;
+    margin-inline:auto;
+  }
+
+  .safelight{
+    position:absolute;
+    top:-60px; right:50%;
+    transform:translateX(50%);
+    width:220px; height:220px;
+    background:radial-gradient(circle, rgba(255,122,26,.35), transparent 70%);
+    filter:blur(10px);
+    pointer-events:none;
+    z-index:-1;
+  }
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:6px;
+    margin-bottom:20px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:12px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:14px;
+    color:var(--paper-dim);
+    cursor:pointer;
+    border:none;
+    background:transparent;
+    font-family:'Tajawal', sans-serif;
+    transition:all .15s ease;
+  }
+  .tab.active{
+    background:var(--amber);
+    color:#1a0d05;
+  }
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px;
+    margin-bottom:20px;
+  }
+
+  .dropzone{
+    border:2px dashed var(--amber-dim);
+    border-radius:12px;
+    padding:40px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .2s ease, background .2s ease;
+    position:relative;
+  }
+  .dropzone:hover, .dropzone.drag{
+    border-color:var(--amber);
+    background:rgba(255,122,26,0.05);
+  }
+  .dropzone input{display:none;}
+  .dz-icon{font-size:34px; margin-bottom:10px; display:block;}
+  .dz-title{font-weight:700; font-size:16px; margin-bottom:4px;}
+  .dz-sub{color:var(--paper-dim); font-size:13px; font-family:'IBM Plex Mono', monospace;}
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  .slider-group{flex:1; min-width:220px;}
+  .slider-label{
+    display:flex; justify-content:space-between;
+    font-size:13px; color:var(--paper-dim);
+    margin-bottom:8px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .slider-label b{color:var(--amber); font-weight:600;}
+  input[type=range]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:linear-gradient(90deg, var(--amber) var(--val,60%), var(--line) var(--val,60%));
+    outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:var(--amber);
+    border:3px solid var(--bg);
+    box-shadow:0 0 0 1px var(--amber);
+    cursor:pointer;
+  }
+
+  .fmt-select{
+    display:flex; gap:8px;
+  }
+  .fmt-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--paper-dim);
+    padding:8px 14px;
+    border-radius:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .fmt-btn.active{
+    border-color:var(--amber);
+    color:var(--amber);
+    background:rgba(255,122,26,0.08);
+  }
+
+  .list{margin-top:22px; display:flex; flex-direction:column; gap:10px;}
+  .item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .item img{
+    width:46px; height:46px;
+    object-fit:cover;
+    border-radius:6px;
+    border:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .item .meta{flex:1; min-width:0;}
+  .item .name{
+    font-size:13px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-bottom:4px;
+  }
+  .item .sizes{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--paper-dim);
+    display:flex; align-items:center; gap:6px;
+  }
+  .item .sizes .after{color:var(--green);}
+  .item .sizes .arrow{color:var(--amber);}
+  .item .status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--paper-dim);
+    flex-shrink:0;
+    width:60px;
+    text-align:left;
+  }
+  .item .remove, .item .dl{
+    background:none; border:none; color:var(--paper-dim);
+    cursor:pointer; font-size:16px; flex-shrink:0;
+    line-height:1; padding:4px;
+  }
+  .item .remove:hover, .item .dl:hover{color:var(--amber);}
+
+  .summary{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:22px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .meter{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--paper-dim);
+  }
+  .meter b{color:var(--paper); font-size:20px; display:block;}
+  .meter .save{color:var(--green);}
+
+  .btn-main{
+    background:var(--amber);
+    color:#1a0d05;
+    border:none;
+    padding:14px 28px;
+    border-radius:10px;
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+    box-shadow:0 0 0 rgba(255,122,26,0);
+  }
+  .btn-main:hover{transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,122,26,0.25);}
+  .btn-main:disabled{background:var(--line); color:var(--paper-dim); cursor:not-allowed; transform:none; box-shadow:none;}
+
+  .empty-hint{
+    text-align:center;
+    color:var(--paper-dim);
+    font-size:13px;
+    margin-top:22px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  .badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--paper-dim);
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    padding:6px 10px;
+    border-radius:6px;
+    margin-bottom:16px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--paper-dim);
+    font-size:12px;
+    margin-top:30px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="safelight"></div>
+    <div class="eyebrow">— غرفة التحميض الرقمية —</div>
+    <h1>اضغط صورك، أو افتح<br>ملفًا محميًا بكلمة سر</h1>
+    <p>اضغط مجموعة صور في ملف ZIP واحد، أو افتح ملف ZIP المشفّر بكلمة سر (من أداة الحماية) واستخرج الصور منه مباشرة داخل متصفحك.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-view="compress">ضغط الصور</button>
+    <button class="tab" data-view="extract">فك ضغط ملف محمي</button>
+  </div>
+
+  <!-- ===== COMPRESS VIEW ===== -->
+  <div class="view active" id="view-compress">
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <span class="dz-icon">◧</span>
+        <div class="dz-title">اسحب الصور وأفلتها هنا، أو اضغط للاختيار</div>
+        <div class="dz-sub">JPG · PNG · WEBP</div>
+      </div>
+
+      <div class="lossless-row" id="losslessRow" style="display:flex; align-items:center; gap:10px; margin-top:20px; background:var(--bg-soft); border:1px solid var(--line); border-radius:10px; padding:12px 14px;">
+        <input type="checkbox" id="losslessToggle" style="width:18px; height:18px; accent-color:var(--amber); cursor:pointer; flex-shrink:0;">
+        <label for="losslessToggle" style="flex:1; font-size:13px; cursor:pointer;">
+          الحفاظ على الجودة الأصلية <span style="color:var(--paper-dim); font-family:'IBM Plex Mono', monospace; font-size:11px;">(بدون أي فقدان بالجودة)</span>
+        </label>
+      </div>
+
+      <div class="controls" id="controlsRow">
+        <div class="slider-group">
+          <div class="slider-label"><span>مستوى الضغط</span><b id="qualityLabel">60%</b></div>
+          <input type="range" id="quality" min="10" max="95" value="60" style="--val:60%">
+        </div>
+        <div class="fmt-select" id="fmtSelect">
+          <button class="fmt-btn active" data-fmt="jpeg">JPG</button>
+          <button class="fmt-btn" data-fmt="webp">WEBP</button>
+        </div>
+      </div>
+      <div class="dz-sub" id="losslessNote" style="display:none; margin-top:10px; line-height:1.7;">
+        سيتم تجميع الصور بحجمها وجودتها الأصليّة كما هي دون أي إعادة ترميز — الملف الناتج لن يصغر كثيرًا لأن الصور مضغوطة أصلًا بصيغتها (JPG/PNG)، لكن الجودة تبقى 100% مطابقة للأصل.
+      </div>
+
+      <div class="list" id="list"></div>
+      <div class="empty-hint" id="emptyHint">لم تُضِف أي صور بعد</div>
+
+      <div class="protect-row" id="protectRow" style="display:flex; align-items:center; gap:10px; margin-top:20px; background:var(--bg-soft); border:1px solid var(--line); border-radius:10px; padding:12px 14px;">
+        <input type="checkbox" id="protectToggle" style="width:18px; height:18px; accent-color:var(--amber); cursor:pointer; flex-shrink:0;">
+        <label for="protectToggle" style="flex:1; font-size:13px; cursor:pointer;">
+          حماية الملف بكلمة سر <span style="color:var(--paper-dim); font-family:'IBM Plex Mono', monospace; font-size:11px;">(اختياري)</span>
+        </label>
+      </div>
+      <div id="protectPwWrap" style="display:none; margin-top:12px;">
+        <div class="pw-row" style="position:relative;">
+          <input type="password" id="protectPw" placeholder="اكتب كلمة سر" style="width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--paper); padding:13px 44px 13px 14px; border-radius:9px; font-family:'IBM Plex Mono', monospace; font-size:14px; outline:none;">
+          <button type="button" id="protectPwToggle" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--paper-dim); cursor:pointer; font-size:15px; padding:4px;">◉</button>
+        </div>
+      </div>
+
+      <div class="summary" id="summary" style="display:none;">
+        <div class="meter">
+          <span>الحجم الإجمالي بعد الضغط</span>
+          <b id="totalAfter">—</b>
+          <span class="save" id="saveLabel"></span>
+        </div>
+        <button class="btn-main" id="downloadBtn">تحميل الملف المضغوط (ZIP)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EXTRACT VIEW ===== -->
+  <div class="view" id="view-extract">
+    <div class="panel">
+      <div class="dropzone" id="dropzoneZip">
+        <input type="file" id="zipInput" accept=".zip">
+        <span class="dz-icon">◨</span>
+        <div class="dz-title">اسحب ملف ZIP المحمي هنا، أو اضغط للاختيار</div>
+        <div class="dz-sub">الملف الناتج من أداة الحماية بكلمة سر</div>
+      </div>
+
+      <div class="badge" id="zipBadge" style="display:none;"></div>
+
+      <div class="field" id="pwField" style="display:none; margin-top:18px;">
+        <label style="display:block; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--paper-dim); letter-spacing:.05em; margin-bottom:8px;">كلمة سر الملف</label>
+        <div class="pw-row" style="position:relative;">
+          <input type="password" id="zipPw" placeholder="اكتب كلمة السر" style="width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--paper); padding:13px 44px 13px 14px; border-radius:9px; font-family:'IBM Plex Mono', monospace; font-size:14px; outline:none;">
+          <button type="button" id="pwToggle" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--paper-dim); cursor:pointer; font-size:15px; padding:4px;">◉</button>
+        </div>
+        <div id="pwError" style="display:none; color:#e0654f; font-size:12px; font-family:'IBM Plex Mono', monospace; margin-top:8px;">كلمة السر غير صحيحة، حاول مرة أخرى</div>
+        <button class="btn-main" id="unlockBtn" style="width:100%; margin-top:16px;">فك التشفير واستخراج الصور</button>
+      </div>
+
+      <div class="list" id="extractList"></div>
+      <div class="empty-hint" id="extractEmptyHint">لم تفتح أي ملف ZIP بعد</div>
+
+      <div class="summary" id="extractSummary" style="display:none;">
+        <div class="meter">
+          <span>عدد الصور المستخرجة</span>
+          <b id="extractCount">—</b>
+        </div>
+        <button class="btn-main" id="downloadAllBtn">تحميل الصور في مجلد واحد</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>تتم كل عملية الضغط وفك التشفير داخل متصفحك — لا تُرفع أي صورة أو كلمة سر إلى أي خادم.</footer>
+</div>
+
+<script>
+/* ---------- DOWNLOAD HELPER ---------- */
+/* Priority: 1) our own native AndroidBridge (100% reliable in our own app)
+             2) Web Share sheet (works in most other WebView wrappers)
+             3) data: URI anchor download
+             4) classic blob URL (last resort) */
+function blobToDataURL(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function triggerDownload(blob, filename){
+  // 0) Our own app's native bridge — most reliable, since we wrote the native code ourselves
+  if(window.AndroidBridge && typeof window.AndroidBridge.saveFile === 'function'){
+    try{
+      const dataUrl = await blobToDataURL(blob);
+      window.AndroidBridge.saveFile(dataUrl, filename, blob.type || 'application/octet-stream');
+      return;
+    }catch(err){
+      // fall through to other methods below if the bridge somehow fails
+    }
+  }
+
+  // 1) Try the native Share sheet (works in most WebView wrappers, even ones with no download handling)
+  try{
+    const file = new File([blob], filename, { type: blob.type || 'application/octet-stream' });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      await navigator.share({ files: [file], title: filename });
+      return;
+    }
+  }catch(err){
+    // user cancelled share, or share failed — fall through to download methods below
+    if(err && err.name === 'AbortError') return; // user cancelled on purpose, don't also trigger a download
+  }
+
+  // 2) Fall back to a data: URI anchor download
+  try{
+    const dataUrl = await blobToDataURL(blob);
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }catch(err){
+    // 3) Last resort: classic blob URL
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+}
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('view-' + tab.dataset.view).classList.add('active');
+  });
+});
+
+function formatBytes(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(2) + ' MB';
+}
+
+/* ---------- COMPRESS ---------- */
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const list = document.getElementById('list');
+const emptyHint = document.getElementById('emptyHint');
+const summary = document.getElementById('summary');
+const totalAfterEl = document.getElementById('totalAfter');
+const saveLabelEl = document.getElementById('saveLabel');
+const qualitySlider = document.getElementById('quality');
+const qualityLabel = document.getElementById('qualityLabel');
+const downloadBtn = document.getElementById('downloadBtn');
+const fmtSelect = document.getElementById('fmtSelect');
+const losslessToggle = document.getElementById('losslessToggle');
+const controlsRow = document.getElementById('controlsRow');
+const losslessNote = document.getElementById('losslessNote');
+const protectToggle = document.getElementById('protectToggle');
+const protectPwWrap = document.getElementById('protectPwWrap');
+const protectPw = document.getElementById('protectPw');
+const protectPwToggle = document.getElementById('protectPwToggle');
+
+let files = [];
+let format = 'jpeg';
+let idCounter = 0;
+let lossless = false;
+
+protectToggle.addEventListener('change', () => {
+  protectPwWrap.style.display = protectToggle.checked ? 'block' : 'none';
+  if(!protectToggle.checked) protectPw.value = '';
+});
+protectPwToggle.addEventListener('click', () => {
+  protectPw.type = protectPw.type === 'password' ? 'text' : 'password';
+});
+
+losslessToggle.addEventListener('change', () => {
+  lossless = losslessToggle.checked;
+  controlsRow.style.opacity = lossless ? '0.4' : '1';
+  controlsRow.style.pointerEvents = lossless ? 'none' : 'auto';
+  losslessNote.style.display = lossless ? 'block' : 'none';
+  if(files.length) recompressAll();
+});
+
+qualitySlider.addEventListener('input', () => {
+  qualityLabel.textContent = qualitySlider.value + '%';
+  qualitySlider.style.setProperty('--val', qualitySlider.value + '%');
+  if(files.length && !lossless) recompressAll();
+});
+
+fmtSelect.addEventListener('click', (e) => {
+  const btn = e.target.closest('.fmt-btn');
+  if(!btn) return;
+  fmtSelect.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  format = btn.dataset.fmt;
+  if(files.length && !lossless) recompressAll();
+});
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(fileList){
+  const imgs = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  imgs.forEach(file => {
+    const entry = {
+      id: ++idCounter,
+      file,
+      originalSize: file.size,
+      compressedBlob: null,
+      compressedSize: 0,
+      status: 'جارٍ...',
+      previewUrl: URL.createObjectURL(file)
+    };
+    files.push(entry);
+    renderList();
+    compressFile(entry);
+  });
+  if(imgs.length) emptyHint.style.display = 'none';
+}
+
+function compressFile(entry){
+  if(lossless){
+    entry.compressedBlob = entry.file;
+    entry.compressedSize = entry.file.size;
+    entry.status = 'جاهز';
+    renderList();
+    updateSummary();
+    return;
+  }
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
+    const q = parseInt(qualitySlider.value, 10) / 100;
+    canvas.toBlob(blob => {
+      entry.compressedBlob = blob;
+      entry.compressedSize = blob.size;
+      entry.status = 'جاهز';
+      renderList();
+      updateSummary();
+    }, mime, q);
+  };
+  img.src = entry.previewUrl;
+}
+
+function recompressAll(){
+  files.forEach(entry => { entry.status = 'جارٍ...'; });
+  renderList();
+  files.forEach(entry => compressFile(entry));
+}
+
+function removeEntry(id){
+  files = files.filter(f => f.id !== id);
+  renderList();
+  updateSummary();
+}
+
+function renderList(){
+  list.innerHTML = '';
+  emptyHint.style.display = files.length ? 'none' : 'block';
+  files.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const sizesHtml = entry.compressedBlob
+      ? `${formatBytes(entry.originalSize)} <span class="arrow">←</span> <span class="after">${formatBytes(entry.compressedSize)}</span>`
+      : formatBytes(entry.originalSize);
+    div.innerHTML = `
+      <img src="${entry.previewUrl}" alt="">
+      <div class="meta">
+        <div class="name">${entry.file.name}</div>
+        <div class="sizes">${sizesHtml}</div>
+      </div>
+      <div class="status">${entry.status}</div>
+      <button class="remove" title="إزالة" data-id="${entry.id}">✕</button>
+    `;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.remove').forEach(btn => {
+    btn.addEventListener('click', () => removeEntry(parseInt(btn.dataset.id, 10)));
+  });
+}
+
+function updateSummary(){
+  const ready = files.filter(f => f.compressedBlob);
+  if(!ready.length){
+    summary.style.display = 'none';
+    return;
+  }
+  summary.style.display = 'flex';
+  const totalOriginal = ready.reduce((s, f) => s + f.originalSize, 0);
+  const totalAfter = ready.reduce((s, f) => s + f.compressedSize, 0);
+  totalAfterEl.textContent = formatBytes(totalAfter);
+  const pct = totalOriginal ? Math.round((1 - totalAfter/totalOriginal) * 100) : 0;
+  saveLabelEl.textContent = pct > 0 ? `توفير ${pct}%` : '';
+  downloadBtn.disabled = ready.length !== files.length;
+}
+
+downloadBtn.addEventListener('click', async () => {
+  const ready = files.filter(f => f.compressedBlob);
+  if(!ready.length) return;
+
+  const usePassword = protectToggle.checked && protectPw.value.length > 0;
+  if(protectToggle.checked && !usePassword){
+    alert('اكتب كلمة سر أو ألغِ تفعيل خيار الحماية قبل التحميل');
+    return;
+  }
+
+  downloadBtn.disabled = true;
+  downloadBtn.textContent = usePassword ? 'جارٍ التشفير...' : 'جارٍ التجهيز...';
+
+  const ext = format === 'webp' ? 'webp' : 'jpg';
+  const nameFor = (entry) => lossless
+    ? entry.file.name
+    : `${entry.file.name.replace(/\.[^/.]+$/, '')}.${ext}`;
+
+  let blob;
+  if(usePassword){
+    const password = protectPw.value;
+    const zipWriter = new zip.ZipWriter(new zip.BlobWriter('application/zip'), {
+      password, encryptionStrength: 3, zipCrypto: false
+    });
+    for(const entry of ready){
+      await zipWriter.add(nameFor(entry), new zip.BlobReader(entry.compressedBlob));
+    }
+    blob = await zipWriter.close();
+  } else {
+    const zipObj = new JSZip();
+    ready.forEach(entry => zipObj.file(nameFor(entry), entry.compressedBlob));
+    blob = await zipObj.generateAsync({ type: 'blob' });
+  }
+
+  const finalName = lossless
+    ? (usePassword ? 'الصور-الأصلية-محمية.zip' : 'الصور-الأصلية.zip')
+    : (usePassword ? 'الصور-المضغوطة-محمية.zip' : 'الصور-المضغوطة.zip');
+  await triggerDownload(blob, finalName);
+  downloadBtn.disabled = false;
+  downloadBtn.textContent = 'تحميل الملف المضغوط (ZIP)';
+});
+
+/* ---------- EXTRACT (password-protected zip) ---------- */
+const dropzoneZip = document.getElementById('dropzoneZip');
+const zipInput = document.getElementById('zipInput');
+const zipBadge = document.getElementById('zipBadge');
+const pwField = document.getElementById('pwField');
+const zipPw = document.getElementById('zipPw');
+const pwToggle = document.getElementById('pwToggle');
+const pwError = document.getElementById('pwError');
+const unlockBtn = document.getElementById('unlockBtn');
+const extractList = document.getElementById('extractList');
+const extractEmptyHint = document.getElementById('extractEmptyHint');
+const extractSummary = document.getElementById('extractSummary');
+const extractCount = document.getElementById('extractCount');
+const downloadAllBtn = document.getElementById('downloadAllBtn');
+
+let extractedImages = [];
+let currentZipFile = null;
+
+const IMAGE_EXT = /\.(jpe?g|png|gif|webp|bmp|svg|avif|heic|tiff?)$/i;
+const IMAGE_MIME = {
+  jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif',
+  webp:'image/webp', bmp:'image/bmp', svg:'image/svg+xml', avif:'image/avif',
+  heic:'image/heic', tif:'image/tiff', tiff:'image/tiff'
+};
+
+dropzoneZip.addEventListener('click', () => zipInput.click());
+dropzoneZip.addEventListener('dragover', (e) => { e.preventDefault(); dropzoneZip.classList.add('drag'); });
+dropzoneZip.addEventListener('dragleave', () => dropzoneZip.classList.remove('drag'));
+dropzoneZip.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzoneZip.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if(f) selectZip(f);
+});
+zipInput.addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  if(f) selectZip(f);
+});
+
+pwToggle.addEventListener('click', () => {
+  zipPw.type = zipPw.type === 'password' ? 'text' : 'password';
+});
+
+zipPw.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') unlockBtn.click();
+});
+
+function selectZip(file){
+  currentZipFile = file;
+  extractedImages.forEach(img => URL.revokeObjectURL(img.url));
+  extractedImages = [];
+  extractList.innerHTML = '';
+  extractSummary.style.display = 'none';
+  extractEmptyHint.style.display = 'none';
+  pwError.style.display = 'none';
+  zipBadge.style.display = 'block';
+  zipBadge.textContent = `${file.name} — أدخل كلمة السر لفك التشفير`;
+  pwField.style.display = 'block';
+  zipPw.value = '';
+  zipPw.focus();
+}
+
+unlockBtn.addEventListener('click', async () => {
+  if(!currentZipFile) return;
+  const password = zipPw.value;
+  unlockBtn.disabled = true;
+  unlockBtn.textContent = 'جارٍ فك التشفير...';
+  pwError.style.display = 'none';
+  extractList.innerHTML = '';
+  extractedImages.forEach(img => URL.revokeObjectURL(img.url));
+  extractedImages = [];
+
+  try{
+    const reader = new zip.ZipReader(new zip.BlobReader(currentZipFile), { password });
+    const entries = await reader.getEntries();
+    const imageEntries = entries.filter(e => !e.directory && IMAGE_EXT.test(e.filename));
+
+    if(!imageEntries.length){
+      await reader.close();
+      zipBadge.textContent = 'لا توجد صور داخل هذا الملف';
+      extractEmptyHint.style.display = 'block';
+      unlockBtn.disabled = false;
+      unlockBtn.textContent = 'فك التشفير واستخراج الصور';
+      return;
+    }
+
+    for(const entry of imageEntries){
+      const ext = entry.filename.split('.').pop().toLowerCase();
+      const mime = IMAGE_MIME[ext] || 'application/octet-stream';
+      const blob = await entry.getData(new zip.BlobWriter(mime), { password });
+      const url = URL.createObjectURL(blob);
+      extractedImages.push({ name: entry.filename.split('/').pop(), blob, url, size: blob.size });
+    }
+    await reader.close();
+
+    zipBadge.textContent = `${currentZipFile.name} — تم فك التشفير — ${extractedImages.length} صورة`;
+    pwField.style.display = 'none';
+    renderExtractList();
+    extractCount.textContent = extractedImages.length;
+    extractSummary.style.display = 'flex';
+  }catch(err){
+    pwError.style.display = 'block';
+    zipBadge.textContent = `${currentZipFile.name} — لم يتم فك التشفير`;
+  }
+  unlockBtn.disabled = false;
+  unlockBtn.textContent = 'فك التشفير واستخراج الصور';
+});
+
+function renderExtractList(){
+  extractList.innerHTML = '';
+  extractedImages.forEach((img, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <img src="${img.url}" alt="">
+      <div class="meta">
+        <div class="name">${img.name}</div>
+        <div class="sizes">${formatBytes(img.size)}</div>
+      </div>
+      <button class="dl" title="تحميل" data-idx="${idx}">⭳</button>
+    `;
+    extractList.appendChild(div);
+  });
+  extractList.querySelectorAll('.dl').forEach(btn => {
+    btn.addEventListener('click', () => downloadSingle(parseInt(btn.dataset.idx, 10)));
+  });
+}
+
+function downloadSingle(idx){
+  const img = extractedImages[idx];
+  triggerDownload(img.blob, img.name);
+}
+
+downloadAllBtn.addEventListener('click', async () => {
+  if(!extractedImages.length) return;
+  downloadAllBtn.disabled = true;
+  downloadAllBtn.textContent = 'جارٍ التجهيز...';
+
+  const baseName = currentZipFile
+    ? currentZipFile.name.replace(/\.[^/.]+$/, '')
+    : 'الصور-المستخرجة';
+  const folderName = `${baseName}-مستخرجة`;
+
+  const zipObj = new JSZip();
+  const folder = zipObj.folder(folderName);
+  extractedImages.forEach(img => folder.file(img.name, img.blob));
+
+  const blob = await zipObj.generateAsync({ type: 'blob' });
+  await triggerDownload(blob, `${folderName}.zip`);
+
+  downloadAllBtn.disabled = false;
+  downloadAllBtn.textContent = 'تحميل الصور في مجلد واحد';
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
