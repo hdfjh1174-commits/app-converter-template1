@@ -29,37 +29,49 @@
     color:var(--paper);
     font-family:'Tajawal', sans-serif;
     min-height:100vh;
-    padding:32px 16px 80px;
+    padding:28px 16px 80px;
   }
   .wrap{max-width:640px;margin:0 auto;}
 
-  header{text-align:center; margin-bottom:28px; position:relative;}
+  header{text-align:center; margin-bottom:24px; position:relative;}
   .glow{
     position:absolute; top:-60px; right:50%; transform:translateX(50%);
     width:220px; height:220px; background:radial-gradient(circle, rgba(58,178,163,.35), transparent 70%);
     filter:blur(10px); pointer-events:none; z-index:-1;
   }
   .eyebrow{font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.18em; color:var(--teal); text-transform:uppercase; margin-bottom:10px;}
-  h1{font-size:clamp(26px,5vw,38px); font-weight:900; margin:0 0 10px; line-height:1.3;}
-  header p{color:var(--paper-dim); font-size:15px; margin:0; max-width:440px; margin-inline:auto;}
+  h1{font-size:clamp(24px,5vw,34px); font-weight:900; margin:0 0 8px; line-height:1.3;}
+  header p{color:var(--paper-dim); font-size:14px; margin:0; max-width:440px; margin-inline:auto;}
 
-  .tabs{display:flex; gap:8px; background:var(--bg-soft); border:1px solid var(--line); border-radius:12px; padding:6px; margin-bottom:20px;}
-  .tab{flex:1; text-align:center; padding:12px; border-radius:8px; font-weight:700; font-size:14px; color:var(--paper-dim); cursor:pointer; border:none; background:transparent; font-family:'Tajawal', sans-serif; transition:all .15s ease;}
+  .tabs{display:flex; gap:6px; background:var(--bg-soft); border:1px solid var(--line); border-radius:12px; padding:6px; margin-bottom:18px;}
+  .tab{flex:1; text-align:center; padding:11px 4px; border-radius:8px; font-weight:700; font-size:13px; color:var(--paper-dim); cursor:pointer; border:none; background:transparent; font-family:'Tajawal', sans-serif; transition:all .15s ease;}
   .tab.active{background:var(--teal); color:#04211c;}
 
   .view{display:none;}
   .view.active{display:block;}
 
-  .panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:26px; margin-bottom:20px;}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px;}
 
-  textarea{
-    width:100%; min-height:110px; background:var(--bg-soft); border:1px solid var(--line); color:var(--paper);
-    padding:14px; border-radius:10px; font-family:'Tajawal', sans-serif; font-size:15px; outline:none; resize:vertical;
+  /* type selector chips */
+  .type-chips{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .chip{
+    background:var(--bg-soft); border:1px solid var(--line); color:var(--paper-dim);
+    padding:9px 14px; border-radius:20px; font-size:13px; font-weight:700; cursor:pointer;
+    font-family:'Tajawal', sans-serif; transition:all .15s ease;
   }
-  textarea:focus{border-color:var(--teal);}
+  .chip.active{background:var(--teal); color:#04211c; border-color:var(--teal);}
 
-  .size-row{display:flex; align-items:center; gap:12px; margin-top:16px;}
-  .size-row label{font-size:13px; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12px; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace; margin-bottom:6px;}
+  input[type=text], input[type=email], input[type=tel], input[type=password], textarea{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--paper);
+    padding:13px 14px; border-radius:10px; font-family:'Tajawal', sans-serif; font-size:15px; outline:none;
+  }
+  input:focus, textarea:focus{border-color:var(--teal);}
+  textarea{min-height:90px; resize:vertical;}
+
+  .size-row{display:flex; align-items:center; gap:12px; margin-top:6px;}
+  .size-row label{font-size:13px; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace; white-space:nowrap;}
   input[type=range]{
     flex:1; -webkit-appearance:none; height:4px; border-radius:2px;
     background:linear-gradient(90deg, var(--teal) var(--val,50%), var(--line) var(--val,50%)); outline:none;
@@ -70,7 +82,7 @@
   }
 
   .btn-main{
-    width:100%; margin-top:20px; background:var(--teal); color:#04211c; border:none;
+    width:100%; margin-top:8px; background:var(--teal); color:#04211c; border:none;
     padding:15px 28px; border-radius:10px; font-family:'Tajawal', sans-serif; font-weight:700; font-size:15px;
     cursor:pointer; transition:transform .12s ease, box-shadow .12s ease;
   }
@@ -78,11 +90,13 @@
   .btn-main:disabled{background:var(--line); color:var(--paper-dim); cursor:not-allowed;}
   .btn-secondary{
     width:100%; margin-top:10px; background:transparent; color:var(--teal); border:1px solid var(--teal-dim);
-    padding:13px 28px; border-radius:10px; font-family:'Tajawal', sans-serif; font-weight:700; font-size:14px; cursor:pointer;
+    padding:12px 28px; border-radius:10px; font-family:'Tajawal', sans-serif; font-weight:700; font-size:14px; cursor:pointer;
   }
+  .btn-row{display:flex; gap:10px; margin-top:10px;}
+  .btn-row .btn-secondary{margin-top:0;}
 
   #qrResult{
-    display:flex; justify-content:center; align-items:center; margin-top:22px;
+    display:flex; justify-content:center; align-items:center; margin-top:18px;
     background:#fff; border-radius:14px; padding:20px; min-height:120px;
   }
   #qrResult:empty{display:none;}
@@ -100,6 +114,16 @@
     position:absolute; bottom:14px; left:0; right:0; text-align:center;
     font-family:'IBM Plex Mono', monospace; font-size:12px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6);
   }
+  .torch-btn{
+    position:absolute; top:12px; left:12px; width:42px; height:42px; border-radius:50%;
+    background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.3); color:#fff;
+    font-size:18px; cursor:pointer; display:none; align-items:center; justify-content:center;
+  }
+  .torch-btn.show{display:flex;}
+  .torch-btn.on{background:var(--teal); color:#04211c;}
+
+  .scan-controls{display:flex; gap:10px;}
+  .scan-controls .btn-main{flex:1;}
 
   .result-card{
     display:none; background:var(--bg-soft); border:1px solid var(--teal-dim); border-radius:12px;
@@ -108,9 +132,9 @@
   .result-card.show{display:block;}
   .result-label{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--paper-dim); margin-bottom:8px; letter-spacing:.05em;}
   .result-text{font-size:15px; word-break:break-all; margin-bottom:14px; line-height:1.6;}
-  .result-actions{display:flex; gap:10px;}
+  .result-actions{display:flex; gap:10px; flex-wrap:wrap;}
   .result-actions button{
-    flex:1; background:var(--teal); color:#04211c; border:none; padding:10px; border-radius:8px;
+    flex:1; min-width:80px; background:var(--teal); color:#04211c; border:none; padding:10px; border-radius:8px;
     font-family:'Tajawal', sans-serif; font-weight:700; font-size:13px; cursor:pointer;
   }
   .result-actions .ghost{background:transparent; border:1px solid var(--line); color:var(--paper);}
@@ -121,7 +145,25 @@
   }
   .error-msg.show{display:block;}
 
-  footer{text-align:center; color:var(--paper-dim); font-size:12px; margin-top:30px; font-family:'IBM Plex Mono', monospace;}
+  /* history */
+  .history-item{
+    display:flex; align-items:center; gap:12px; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:10px; padding:12px 14px; margin-bottom:10px; cursor:pointer;
+  }
+  .history-icon{
+    width:36px; height:36px; border-radius:8px; background:var(--teal-dim); color:#eafaf7;
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .history-meta{flex:1; min-width:0;}
+  .history-text{font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .history-time{font-size:11px; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace; margin-top:2px;}
+  .history-type{
+    font-size:10px; font-family:'IBM Plex Mono', monospace; color:var(--teal); border:1px solid var(--teal-dim);
+    border-radius:6px; padding:2px 6px; flex-shrink:0;
+  }
+  .empty-state{text-align:center; color:var(--paper-dim); font-size:13px; padding:30px 0; font-family:'IBM Plex Mono', monospace;}
+
+  footer{text-align:center; color:var(--paper-dim); font-size:12px; margin-top:24px; font-family:'IBM Plex Mono', monospace;}
 </style>
 </head>
 <body>
@@ -129,19 +171,67 @@
   <header>
     <div class="glow"></div>
     <div class="eyebrow">— بدون إنترنت —</div>
-    <h1>ولّد رمز QR،<br>أو امسح وحدة موجودة</h1>
-    <p>حوّل أي نص أو رابط لرمز QR، أو استخدم الكاميرا لقراءة أي رمز QR مباشرة.</p>
+    <h1>ماسح ومولّد QR</h1>
+    <p>ولّد رموز QR لأنواع مختلفة من المحتوى، امسح أي رمز، وارجع لسجل ما مسحته أو ولّدته من قبل.</p>
   </header>
 
   <div class="tabs">
-    <button class="tab active" data-view="generate">توليد رمز</button>
-    <button class="tab" data-view="scan">مسح رمز</button>
+    <button class="tab active" data-view="generate">توليد</button>
+    <button class="tab" data-view="scan">مسح</button>
+    <button class="tab" data-view="history">السجل</button>
   </div>
 
   <!-- ===== GENERATE VIEW ===== -->
   <div class="view active" id="view-generate">
     <div class="panel">
-      <textarea id="qrInput" placeholder="اكتب نص، رابط، رقم واتساب، أو أي شيء بدك تحوله لرمز QR..."></textarea>
+      <div class="type-chips" id="typeChips">
+        <button class="chip active" data-type="text">نص / رابط</button>
+        <button class="chip" data-type="wifi">واي فاي</button>
+        <button class="chip" data-type="contact">جهة اتصال</button>
+        <button class="chip" data-type="email">إيميل</button>
+        <button class="chip" data-type="phone">هاتف</button>
+      </div>
+
+      <!-- text/link form -->
+      <div class="type-form" id="form-text">
+        <div class="field">
+          <label>النص أو الرابط</label>
+          <textarea id="f-text-value" placeholder="اكتب نص، رابط، أو أي شيء بدك تحوله لرمز QR..."></textarea>
+        </div>
+      </div>
+
+      <!-- wifi form -->
+      <div class="type-form" id="form-wifi" style="display:none;">
+        <div class="field"><label>اسم الشبكة (SSID)</label><input type="text" id="f-wifi-ssid" placeholder="MyWiFiNetwork"></div>
+        <div class="field"><label>كلمة السر</label><input type="text" id="f-wifi-password" placeholder="كلمة سر الشبكة"></div>
+        <div class="field">
+          <label>نوع التشفير</label>
+          <select id="f-wifi-enc" style="width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--paper); padding:13px 14px; border-radius:10px; font-family:'Tajawal', sans-serif; font-size:15px;">
+            <option value="WPA">WPA / WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">بدون كلمة سر</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- contact form -->
+      <div class="type-form" id="form-contact" style="display:none;">
+        <div class="field"><label>الاسم الكامل</label><input type="text" id="f-contact-name" placeholder="محمد أحمد"></div>
+        <div class="field"><label>رقم الهاتف</label><input type="tel" id="f-contact-phone" placeholder="+9665xxxxxxxx"></div>
+        <div class="field"><label>الإيميل (اختياري)</label><input type="email" id="f-contact-email" placeholder="name@example.com"></div>
+      </div>
+
+      <!-- email form -->
+      <div class="type-form" id="form-email" style="display:none;">
+        <div class="field"><label>الإيميل</label><input type="email" id="f-email-to" placeholder="name@example.com"></div>
+        <div class="field"><label>الموضوع (اختياري)</label><input type="text" id="f-email-subject" placeholder="عنوان الرسالة"></div>
+        <div class="field"><label>نص الرسالة (اختياري)</label><textarea id="f-email-body" placeholder="محتوى الرسالة..."></textarea></div>
+      </div>
+
+      <!-- phone form -->
+      <div class="type-form" id="form-phone" style="display:none;">
+        <div class="field"><label>رقم الهاتف</label><input type="tel" id="f-phone-value" placeholder="+9665xxxxxxxx"></div>
+      </div>
 
       <div class="size-row">
         <label>الحجم</label>
@@ -152,7 +242,10 @@
       <button class="btn-main" id="generateBtn">توليد رمز QR</button>
 
       <div id="qrResult"></div>
-      <button class="btn-secondary" id="downloadQrBtn" style="display:none;">تحميل الرمز كصورة</button>
+      <div class="btn-row" id="qrActions" style="display:none;">
+        <button class="btn-secondary" id="downloadQrBtn">تحميل الرمز</button>
+        <button class="btn-secondary" id="shareQrBtn">مشاركة</button>
+      </div>
     </div>
   </div>
 
@@ -162,18 +255,22 @@
       <div class="scan-box">
         <video id="video" playsinline muted></video>
         <div class="scan-frame"></div>
+        <button class="torch-btn" id="torchBtn">💡</button>
         <div class="scan-hint">وجّه الكاميرا نحو رمز QR</div>
       </div>
       <canvas id="canvas" style="display:none;"></canvas>
 
-      <button class="btn-main" id="startScanBtn">تشغيل الكاميرا</button>
+      <div class="scan-controls">
+        <button class="btn-main" id="startScanBtn">تشغيل الكاميرا</button>
+      </div>
 
       <div class="result-card" id="scanResultCard">
         <div class="result-label">تم العثور على:</div>
         <div class="result-text" id="scanResultText"></div>
         <div class="result-actions">
-          <button id="openResultBtn">فتح الرابط</button>
-          <button class="ghost" id="copyResultBtn">نسخ</button>
+          <button id="openResultBtn" style="display:none;">فتح</button>
+          <button id="copyResultBtn">نسخ</button>
+          <button class="ghost" id="scanAgainBtn">مسح آخر</button>
         </div>
       </div>
 
@@ -183,72 +280,24 @@
     </div>
   </div>
 
+  <!-- ===== HISTORY VIEW ===== -->
+  <div class="view" id="view-history">
+    <div class="panel">
+      <div id="historyList"></div>
+      <div class="empty-state" id="historyEmpty">لا يوجد سجل بعد — كل رمز تولّده أو تمسحه بيظهر هون</div>
+      <button class="btn-secondary" id="clearHistoryBtn" style="display:none;">مسح كل السجل</button>
+    </div>
+  </div>
+
   <footer>كل المعالجة تتم محليًا داخل التطبيق — لا يُرسل أي محتوى لأي خادم.</footer>
 </div>
 
 <script>
-/* ---------- TABS ---------- */
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('view-' + tab.dataset.view).classList.add('active');
-    if(tab.dataset.view !== 'scan') stopScanning();
-  });
-});
-
-/* ---------- GENERATE ---------- */
-const qrInput = document.getElementById('qrInput');
-const qrSize = document.getElementById('qrSize');
-const qrSizeLabel = document.getElementById('qrSizeLabel');
-const generateBtn = document.getElementById('generateBtn');
-const qrResult = document.getElementById('qrResult');
-const downloadQrBtn = document.getElementById('downloadQrBtn');
-
-qrSize.addEventListener('input', () => {
-  qrSizeLabel.textContent = qrSize.value + 'px';
-  const pct = ((qrSize.value - 150) / (400 - 150)) * 100;
-  qrSize.style.setProperty('--val', pct + '%');
-});
-
-let currentQR = null;
-
-generateBtn.addEventListener('click', () => {
-  const text = qrInput.value.trim();
-  if(!text){
-    qrInput.focus();
-    return;
-  }
-  qrResult.innerHTML = '';
-  const size = parseInt(qrSize.value, 10);
-  currentQR = new QRCode(qrResult, {
-    text: text,
-    width: size,
-    height: size,
-    colorDark: '#0b0f16',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
-  downloadQrBtn.style.display = 'block';
-});
-
-downloadQrBtn.addEventListener('click', async () => {
-  const img = qrResult.querySelector('img');
-  const canvas = qrResult.querySelector('canvas');
-  let blob;
-  if(canvas){
-    blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-  } else if(img){
-    const resp = await fetch(img.src);
-    blob = await resp.blob();
-  }
-  if(!blob) return;
-
-  const filename = 'qr-code.png';
+/* ---------- STORAGE HELPER ---------- */
+function saveToDownloads(blob, filename){
   if(window.AndroidBridge && typeof window.AndroidBridge.saveFile === 'function'){
     const reader = new FileReader();
-    reader.onloadend = () => window.AndroidBridge.saveFile(reader.result, filename, 'image/png');
+    reader.onloadend = () => window.AndroidBridge.saveFile(reader.result, filename, blob.type || 'application/octet-stream');
     reader.readAsDataURL(blob);
     return;
   }
@@ -260,6 +309,210 @@ downloadQrBtn.addEventListener('click', async () => {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+/* ---------- HISTORY ---------- */
+const HISTORY_KEY = 'qr_app_history_v1';
+
+function loadHistory(){
+  try{
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  }catch(e){ return []; }
+}
+function saveHistoryList(list){
+  try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 100))); }catch(e){}
+}
+function addToHistory(entry){
+  const list = loadHistory();
+  list.unshift({ ...entry, time: Date.now() });
+  saveHistoryList(list);
+  renderHistory();
+}
+
+const historyList = document.getElementById('historyList');
+const historyEmpty = document.getElementById('historyEmpty');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+const TYPE_ICONS = { text:'✎', wifi:'📶', contact:'👤', email:'✉', phone:'☎', scan:'🔍' };
+const TYPE_LABELS = { text:'نص', wifi:'واي فاي', contact:'جهة اتصال', email:'إيميل', phone:'هاتف', scan:'ممسوح' };
+
+function formatTime(ts){
+  const d = new Date(ts);
+  return d.toLocaleString('ar', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit' });
+}
+
+function renderHistory(){
+  const list = loadHistory();
+  historyList.innerHTML = '';
+  if(!list.length){
+    historyEmpty.style.display = 'block';
+    clearHistoryBtn.style.display = 'none';
+    return;
+  }
+  historyEmpty.style.display = 'none';
+  clearHistoryBtn.style.display = 'block';
+  list.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div class="history-icon">${TYPE_ICONS[item.type] || '✎'}</div>
+      <div class="history-meta">
+        <div class="history-text">${item.display || item.value}</div>
+        <div class="history-time">${formatTime(item.time)}</div>
+      </div>
+      <div class="history-type">${TYPE_LABELS[item.type] || item.type}</div>
+    `;
+    div.addEventListener('click', () => {
+      navigator.clipboard?.writeText(item.value).catch(()=>{});
+    });
+    historyList.appendChild(div);
+  });
+}
+
+clearHistoryBtn.addEventListener('click', () => {
+  saveHistoryList([]);
+  renderHistory();
+});
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('view-' + tab.dataset.view).classList.add('active');
+    if(tab.dataset.view !== 'scan') stopScanning();
+    if(tab.dataset.view === 'history') renderHistory();
+  });
+});
+
+/* ---------- GENERATE: type switching ---------- */
+const typeChips = document.getElementById('typeChips');
+let currentType = 'text';
+
+typeChips.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  typeChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentType = chip.dataset.type;
+  document.querySelectorAll('.type-form').forEach(f => f.style.display = 'none');
+  document.getElementById('form-' + currentType).style.display = 'block';
+  qrResult.innerHTML = '';
+  qrActions.style.display = 'none';
+});
+
+function buildQRPayload(){
+  switch(currentType){
+    case 'wifi': {
+      const ssid = document.getElementById('f-wifi-ssid').value.trim();
+      const pass = document.getElementById('f-wifi-password').value.trim();
+      const enc = document.getElementById('f-wifi-enc').value;
+      if(!ssid) return null;
+      const esc = s => s.replace(/([\\;,:"])/g, '\\$1');
+      return {
+        payload: `WIFI:T:${enc};S:${esc(ssid)};P:${enc === 'nopass' ? '' : esc(pass)};;`,
+        display: `واي فاي: ${ssid}`
+      };
+    }
+    case 'contact': {
+      const name = document.getElementById('f-contact-name').value.trim();
+      const phone = document.getElementById('f-contact-phone').value.trim();
+      const email = document.getElementById('f-contact-email').value.trim();
+      if(!name) return null;
+      let vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\n`;
+      if(phone) vcard += `TEL:${phone}\n`;
+      if(email) vcard += `EMAIL:${email}\n`;
+      vcard += `END:VCARD`;
+      return { payload: vcard, display: `جهة اتصال: ${name}` };
+    }
+    case 'email': {
+      const to = document.getElementById('f-email-to').value.trim();
+      const subject = document.getElementById('f-email-subject').value.trim();
+      const body = document.getElementById('f-email-body').value.trim();
+      if(!to) return null;
+      const params = [];
+      if(subject) params.push('subject=' + encodeURIComponent(subject));
+      if(body) params.push('body=' + encodeURIComponent(body));
+      return { payload: `mailto:${to}${params.length ? '?' + params.join('&') : ''}`, display: `إيميل: ${to}` };
+    }
+    case 'phone': {
+      const phone = document.getElementById('f-phone-value').value.trim();
+      if(!phone) return null;
+      return { payload: `tel:${phone}`, display: `هاتف: ${phone}` };
+    }
+    default: {
+      const text = document.getElementById('f-text-value').value.trim();
+      if(!text) return null;
+      return { payload: text, display: text.length > 40 ? text.slice(0, 40) + '…' : text };
+    }
+  }
+}
+
+/* ---------- GENERATE ---------- */
+const qrSize = document.getElementById('qrSize');
+const qrSizeLabel = document.getElementById('qrSizeLabel');
+const generateBtn = document.getElementById('generateBtn');
+const qrResult = document.getElementById('qrResult');
+const qrActions = document.getElementById('qrActions');
+const downloadQrBtn = document.getElementById('downloadQrBtn');
+const shareQrBtn = document.getElementById('shareQrBtn');
+
+qrSize.addEventListener('input', () => {
+  qrSizeLabel.textContent = qrSize.value + 'px';
+  const pct = ((qrSize.value - 150) / (400 - 150)) * 100;
+  qrSize.style.setProperty('--val', pct + '%');
+});
+
+generateBtn.addEventListener('click', () => {
+  const result = buildQRPayload();
+  if(!result){
+    generateBtn.textContent = 'أكمّل الحقول المطلوبة أول';
+    setTimeout(() => { generateBtn.textContent = 'توليد رمز QR'; }, 1500);
+    return;
+  }
+  qrResult.innerHTML = '';
+  const size = parseInt(qrSize.value, 10);
+  new QRCode(qrResult, {
+    text: result.payload,
+    width: size,
+    height: size,
+    colorDark: '#0b0f16',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+  qrActions.style.display = 'flex';
+  addToHistory({ type: currentType, value: result.payload, display: result.display });
+});
+
+async function getQrBlob(){
+  const img = qrResult.querySelector('img');
+  const canvas = qrResult.querySelector('canvas');
+  if(canvas){
+    return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  } else if(img){
+    const resp = await fetch(img.src);
+    return await resp.blob();
+  }
+  return null;
+}
+
+downloadQrBtn.addEventListener('click', async () => {
+  const blob = await getQrBlob();
+  if(blob) saveToDownloads(blob, 'qr-code.png');
+});
+
+shareQrBtn.addEventListener('click', async () => {
+  const blob = await getQrBlob();
+  if(!blob) return;
+  try{
+    const file = new File([blob], 'qr-code.png', { type: 'image/png' });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      await navigator.share({ files: [file], title: 'رمز QR' });
+      return;
+    }
+  }catch(e){ /* fall through */ }
+  saveToDownloads(blob, 'qr-code.png');
 });
 
 /* ---------- SCAN ---------- */
@@ -267,21 +520,21 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const startScanBtn = document.getElementById('startScanBtn');
+const torchBtn = document.getElementById('torchBtn');
 const scanResultCard = document.getElementById('scanResultCard');
 const scanResultText = document.getElementById('scanResultText');
 const openResultBtn = document.getElementById('openResultBtn');
 const copyResultBtn = document.getElementById('copyResultBtn');
+const scanAgainBtn = document.getElementById('scanAgainBtn');
 const scanError = document.getElementById('scanError');
 
 let scanning = false;
 let stream = null;
+let torchOn = false;
+let torchSupported = false;
 
 startScanBtn.addEventListener('click', () => {
-  if(scanning){
-    stopScanning();
-  } else {
-    startScanning();
-  }
+  if(scanning){ stopScanning(); } else { startScanning(); }
 });
 
 async function startScanning(){
@@ -293,6 +546,14 @@ async function startScanning(){
     await video.play();
     scanning = true;
     startScanBtn.textContent = 'إيقاف الكاميرا';
+
+    const track = stream.getVideoTracks()[0];
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    torchSupported = !!caps.torch;
+    torchBtn.classList.toggle('show', torchSupported);
+    torchOn = false;
+    torchBtn.classList.remove('on');
+
     requestAnimationFrame(tickScan);
   }catch(err){
     scanError.classList.add('show');
@@ -305,8 +566,19 @@ function stopScanning(){
     stream.getTracks().forEach(t => t.stop());
     stream = null;
   }
+  torchBtn.classList.remove('show', 'on');
   startScanBtn.textContent = 'تشغيل الكاميرا';
 }
+
+torchBtn.addEventListener('click', async () => {
+  if(!stream || !torchSupported) return;
+  const track = stream.getVideoTracks()[0];
+  torchOn = !torchOn;
+  try{
+    await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+    torchBtn.classList.toggle('on', torchOn);
+  }catch(e){ /* torch control not available on this device */ }
+});
 
 function tickScan(){
   if(!scanning) return;
@@ -317,10 +589,12 @@ function tickScan(){
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height);
     if(code && code.data){
+      if(navigator.vibrate) navigator.vibrate(80);
       scanResultText.textContent = code.data;
       scanResultCard.classList.add('show');
       const isLink = /^https?:\/\//i.test(code.data);
       openResultBtn.style.display = isLink ? 'block' : 'none';
+      addToHistory({ type: 'scan', value: code.data, display: code.data.length > 40 ? code.data.slice(0,40)+'…' : code.data });
       stopScanning();
       return;
     }
@@ -328,11 +602,14 @@ function tickScan(){
   requestAnimationFrame(tickScan);
 }
 
+scanAgainBtn.addEventListener('click', () => {
+  scanResultCard.classList.remove('show');
+  startScanning();
+});
+
 openResultBtn.addEventListener('click', () => {
   const text = scanResultText.textContent;
-  if(/^https?:\/\//i.test(text)){
-    window.open(text, '_blank');
-  }
+  if(/^https?:\/\//i.test(text)) window.open(text, '_blank');
 });
 
 copyResultBtn.addEventListener('click', async () => {
@@ -340,10 +617,11 @@ copyResultBtn.addEventListener('click', async () => {
     await navigator.clipboard.writeText(scanResultText.textContent);
     copyResultBtn.textContent = 'تم النسخ ✓';
     setTimeout(() => { copyResultBtn.textContent = 'نسخ'; }, 1500);
-  }catch(err){
-    // clipboard API might be unavailable; ignore silently
-  }
+  }catch(err){ /* clipboard unavailable */ }
 });
+
+/* ---------- INIT ---------- */
+renderHistory();
 </script>
 </body>
 </html>
